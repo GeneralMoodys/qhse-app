@@ -47,20 +47,26 @@ class IncidentCreate extends Component
     {
         $this->validate();
 
-        Incident::create([
-            'reporter_id' => Auth::id(),
-            'incident_type' => $this->incident_type,
-            'location' => $this->location,
-            'description' => $this->description,
-            'incident_time' => $this->incident_time,
-            'category' => $this->category,
-            'location_details' => $this->location_details,
-            'latitude' => $this->latitude,
-            'longitude' => $this->longitude,
-            'status' => 'reported',
-        ]);
+        try {
+            Incident::create([
+                'reporter_id' => Auth::id(),
+                'incident_type' => $this->incident_type,
+                'location' => $this->location,
+                'description' => $this->description,
+                'incident_time' => $this->incident_time,
+                'category' => $this->category,
+                'location_details' => $this->location_details,
+                'latitude' => $this->latitude,
+                'longitude' => $this->longitude,
+                'status' => 'reported',
+            ]);
 
-        return redirect()->route('incidents.index');
+            session()->flash('success', 'Incident reported successfully.');
+
+            return redirect()->route('incidents.index');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to report incident: ' . $e->getMessage());
+        }
     }
 
     public function render()

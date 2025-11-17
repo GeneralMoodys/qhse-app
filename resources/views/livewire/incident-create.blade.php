@@ -19,6 +19,13 @@
                         @error('category') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
+                    <!-- Incident Type -->
+                    <div class="mb-4">
+                        <label for="incident_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipe Insiden</label>
+                        <input type="text" wire:model="incident_type" id="incident_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
+                        @error('incident_type') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
                     <!-- Location -->
                     <div class="mb-4">
                         <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Lokasi Umum (cth: Gudang A, Ruas Tol KM 50)</label>
