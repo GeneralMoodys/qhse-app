@@ -3,73 +3,55 @@
 namespace App\Http\Controllers;
 
 use App\Models\Action;
-use App\Models\Incident;
-use Illuminate\Support\Facades\DB;
+use App\Models\Accident;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
     public function index(): View
     {
-        $totalIncidents = Incident::count();
-        $openActions = Action::where('status', 'open')->count();
-        $completedActions = Action::where('status', 'completed')->count();
+        // KPI Cards Data
+        $openIncidentsCount = Accident::doesntHave('rca')->count();
+        $openActionsCount = Action::where('status', 'open')->count();
+        $overdueActionsCount = Action::where('status', 'open')->where('due_date', '<', now())->count();
 
-        // Incidents by Type
-        $incidentTypes = Incident::select('incident_type', DB::raw('count(*) as total'))
-            ->groupBy('incident_type')
+        // My Pending Actions Table Data
+        $myPendingActions = Action::where('pic_user_id', Auth::id())
+            ->where('status', 'open')
+            ->with(['car.rootCauseAnalysis.accident', 'incident'])
+            ->latest('due_date')
             ->get();
-        $incidentByTypeLabels = $incidentTypes->pluck('incident_type')->map(fn($label) => ucfirst($label))->toArray();
-        $incidentByTypeData = $incidentTypes->pluck('total')->toArray();
 
-        // Actions by Status
-        $actionStatuses = Action::select('status', DB::raw('count(*) as total'))
+        // Chart 1: Action Status Breakdown
+        $actionStatuses = Action::select('status', \DB::raw('count(*) as total'))
             ->groupBy('status')
             ->get();
-        $actionByStatusLabels = $actionStatuses->pluck('status')->map(fn($label) => ucfirst($label))->toArray();
-        $actionByStatusData = $actionStatuses->pluck('total')->toArray();
+        $actionByStatusLabels = $actionStatuses->pluck('status')->map(fn($label) => ucfirst($label));
+        $actionByStatusData = $actionStatuses->pluck('total');
 
-        // Incidents by Status
-        $incidentStatuses = Incident::select('status', DB::raw('count(*) as total'))
-            ->groupBy('status')
+        // Chart 2: Incidents per Month (Last 12 Months)
+        $incidentsByMonth = Accident::select(
+                \DB::raw("to_char(accident_date, 'YYYY-MM') as month"),
+                \DB::raw('count(*) as total')
+            )
+            ->where('accident_date', '>=', now()->subYear())
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
             ->get();
+        $incidentByMonthLabels = $incidentsByMonth->pluck('month');
+        $incidentByMonthData = $incidentsByMonth->pluck('total');
 
-        $statusColorMap = [
-            'reported' => 'rgb(239, 68, 68)', // Red
-            'investigating' => 'rgb(251, 188, 5)', // Yellow
-            'closed' => 'rgb(34, 197, 94)', // Green
-            // Add more statuses and colors if needed
-        ];
-
-        $statusLabelMap = [
-            'reported' => 'open',
-            'investigating' => 'investigating',
-            'closed' => 'close',
-        ];
-
-        $incidentByStatusLabels = $incidentStatuses->pluck('status')->map(function ($label) use ($statusLabelMap) {
-            $lowerLabel = strtolower($label);
-            return $statusLabelMap[$lowerLabel] ?? ucfirst($lowerLabel);
-        })->toArray();
-
-        $incidentByStatusData = $incidentStatuses->pluck('total')->toArray();
-
-        $incidentByStatusColors = $incidentStatuses->pluck('status')->map(function ($status) use ($statusColorMap) {
-            $lowerStatus = strtolower($status);
-            return $statusColorMap[$lowerStatus] ?? 'rgb(156, 163, 175)'; // Default gray
-        })->toArray();
 
         return view('dashboard', compact(
-            'totalIncidents',
-            'openActions',
-            'completedActions',
-            'incidentByTypeLabels',
-            'incidentByTypeData',
+            'openIncidentsCount',
+            'openActionsCount',
+            'overdueActionsCount',
+            'myPendingActions',
             'actionByStatusLabels',
             'actionByStatusData',
-            'incidentByStatusLabels',
-            'incidentByStatusData',
-            'incidentByStatusColors' // Pass colors to the view
+            'incidentByMonthLabels',
+            'incidentByMonthData'
         ));
     }
 }

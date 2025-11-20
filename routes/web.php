@@ -1,29 +1,36 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\DashboardController;
 
-
+// New Livewire Component Imports
+use App\Livewire\AccidentList;
+use App\Livewire\AccidentCreate;
+use App\Livewire\AccidentShow;
+use App\Livewire\AccidentEdit;
+use App\Livewire\ViolationList;
+use App\Livewire\ViolationCreate;
+use App\Livewire\ViolationShow;
+use App\Livewire\ViolationEdit;
+use App\Livewire\RcaList;
+use App\Livewire\RcaCreate;
+use App\Livewire\RcaShow;
+use App\Livewire\RcaEdit;
+use App\Livewire\CarList;
+use App\Livewire\CarCreate;
+use App\Livewire\CarShow;
+use App\Livewire\CarEdit;
 
 Route::get('/', function () {
-
     return view('welcome');
-
 });
 
-
-
 Route::get('/dashboard', [DashboardController::class, 'index'])
-
     ->middleware(['auth', 'verified'])
-
     ->name('dashboard');
 
-
-
+/*
 // Incident Management Routes
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/incidents', App\Livewire\IncidentList::class)
@@ -70,6 +77,39 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/audits/{audit}/edit', App\Livewire\AuditEdit::class)
         ->middleware('can:edit audit')
         ->name('audits.edit');
+});
+*/
+
+// Accident Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/accidents', AccidentList::class)->name('accidents.index');
+    Route::get('/accidents/create', AccidentCreate::class)->name('accidents.create');
+    Route::get('/accidents/{accident}', AccidentShow::class)->name('accidents.show');
+    Route::get('/accidents/{accident}/edit', AccidentEdit::class)->name('accidents.edit');
+});
+
+// Violation Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/violations', ViolationList::class)->name('violations.index');
+    Route::get('/violations/create', ViolationCreate::class)->name('violations.create');
+    Route::get('/violations/{violation}', ViolationShow::class)->name('violations.show');
+    Route::get('/violations/{violation}/edit', ViolationEdit::class)->name('violations.edit');
+});
+
+// RCA Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/rca', RcaList::class)->name('rca.index');
+    Route::get('/accidents/{accident}/rca/create', RcaCreate::class)->name('rca.create');
+    Route::get('/rca/{rca}', RcaShow::class)->name('rca.show');
+    Route::get('/rca/{rca}/edit', RcaEdit::class)->name('rca.edit');
+});
+
+// CAR Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/cars', CarList::class)->name('cars.index');
+    Route::get('/rca/{rca}/car/create', CarCreate::class)->name('cars.create');
+    Route::get('/cars/{car}', CarShow::class)->name('cars.show');
+    Route::get('/cars/{car}/edit', CarEdit::class)->name('cars.edit');
 });
 
 // Document Control Management Routes

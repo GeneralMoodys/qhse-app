@@ -3,9 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Services\UserService; // Import UserService
 
 class Incident extends Model
 {
@@ -29,9 +28,13 @@ class Incident extends Model
     /**
      * Get the user that reported the incident.
      */
-    public function reporter(): BelongsTo
+    public function getReporterAttribute()
     {
-        return $this->belongsTo(User::class, 'reporter_id');
+        // Caching sederhana agar tidak query berulang kali
+        if (!array_key_exists('reporter_data', $this->attributes)) {
+            $this->attributes['reporter_data'] = app(UserService::class)->findById($this->reporter_id);
+        }
+        return $this->attributes['reporter_data'];
     }
 
     public function actions(): HasMany

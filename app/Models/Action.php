@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Services\UserService; // Import UserService
 
 class Action extends Model
 {
@@ -28,8 +29,17 @@ class Action extends Model
         return $this->belongsTo(Incident::class);
     }
 
-    public function pic(): BelongsTo
+    public function getPicAttribute()
     {
-        return $this->belongsTo(User::class, 'pic_user_id');
+        // Caching sederhana agar tidak query berulang kali
+        if (!array_key_exists('pic_data', $this->attributes)) {
+            $this->attributes['pic_data'] = app(UserService::class)->findById($this->pic_user_id);
+        }
+        return $this->attributes['pic_data'];
+    }
+
+    public function car(): BelongsTo
+    {
+        return $this->belongsTo(CorrectiveActionReport::class, 'corrective_action_report_id');
     }
 }

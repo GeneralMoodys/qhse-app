@@ -1,3 +1,4 @@
+<x-app-layout>
 <div>
     <div class="mb-4">
         <a href="/incidents" class="btn btn-sm btn-outline-secondary">&larr; Kembali ke Daftar Insiden</a>
@@ -128,3 +129,5 @@
         </div>
     </div>
 </div>
+
+</x-app-layout>

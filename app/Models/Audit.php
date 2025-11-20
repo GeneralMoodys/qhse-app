@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Services\UserService; // Import UserService
 
 class Audit extends Model
 {
@@ -28,9 +29,13 @@ class Audit extends Model
         return $this->belongsTo(AuditTemplate::class);
     }
 
-    public function auditor(): BelongsTo
+    public function getAuditorAttribute()
     {
-        return $this->belongsTo(User::class, 'auditor_id');
+        // Caching sederhana agar tidak query berulang kali
+        if (!array_key_exists('auditor_data', $this->attributes)) {
+            $this->attributes['auditor_data'] = app(UserService::class)->findById($this->auditor_id);
+        }
+        return $this->attributes['auditor_data'];
     }
 
     public function items(): HasMany

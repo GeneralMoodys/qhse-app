@@ -98,6 +98,21 @@ return [
             'sslmode' => 'prefer',
         ],
 
+        'pgsql_master' => [
+            'driver' => 'pgsql',
+            'url' => env('DB_MASTER_URL'),
+            'host' => env('DB_MASTER_HOST', '127.0.0.1'),
+            'port' => env('DB_MASTER_PORT', '5432'),
+            'database' => env('DB_MASTER_DATABASE', 'laravel'),
+            'username' => env('DB_MASTER_USERNAME', 'root'),
+            'password' => env('DB_MASTER_PASSWORD', ''),
+            'charset' => env('DB_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),

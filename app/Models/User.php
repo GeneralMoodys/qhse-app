@@ -15,12 +15,20 @@ class User extends Authenticatable
         HasRoles;
 
     /**
+     * The connection name for the model.
+     *
+     * @var string|null
+     */
+    protected $connection = 'pgsql_master';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
     protected $fillable = [
         'name',
+        'nik',
         'email',
         'password',
     ];
