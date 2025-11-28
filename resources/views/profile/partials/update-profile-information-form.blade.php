@@ -17,12 +17,58 @@
         @csrf
         @method('patch')
 
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+        <!-- Profile Photo -->
+        <div class="flex items-center gap-4">
+            <div class="flex-shrink-0">
+                @if ($user->karyawan && $user->karyawan->photo)
+                    <img class="h-20 w-20 rounded-full object-cover" src="{{ asset($user->karyawan->photo) }}" alt="{{ $user->karyawan->nama_karyawan }}">
+                @else
+                    <svg class="h-20 w-20 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4.002 4.002 0 11-8 0 4.002 4.002 0 018 0z" />
+                    </svg>
+                @endif
+            </div>
+            <p class="text-sm text-gray-600">{{ $user->karyawan->nama_karyawan ?? $user->name }}</p>
         </div>
 
+        <!-- Nomor Induk Karyawan -->
+        <div>
+            <x-input-label for="payroll_id" :value="__('Nomor Induk Karyawan')" />
+            <x-text-input id="payroll_id" name="payroll_id" type="text" class="mt-1 block w-full bg-gray-100" :value="$user->karyawan->payroll_id ?? $user->payroll_id" disabled />
+        </div>
+
+        <!-- Tanggal Bergabung -->
+        <div>
+            <x-input-label for="tgl_masuk" :value="__('Tanggal Bergabung')" />
+            <x-text-input id="tgl_masuk" name="tgl_masuk" type="text" class="mt-1 block w-full bg-gray-100" :value="($user->karyawan->tgl_masuk ? \Carbon\Carbon::createFromFormat('j/n/Y', $user->karyawan->tgl_masuk)->isoFormat('D MMMM Y') : '')" disabled />
+        </div>
+
+        <div>
+            <x-input-label for="title" :value="__('Jabatan')" />
+            <x-text-input id="title" type="text" class="mt-1 block w-full bg-gray-100" :value="$user->karyawan?->jabatan?->title" disabled />
+        </div>
+
+        <div>
+            <x-input-label for="department" :value="__('Departemen')" />
+            <x-text-input id="department" type="text" class="mt-1 block w-full bg-gray-100" :value="$user->karyawan?->department?->dept_name" disabled />
+        </div>
+
+        <div>
+            <x-input-label for="division" :value="__('Divisi')" />
+            <x-text-input id="division" type="text" class="mt-1 block w-full bg-gray-100" :value="$user->karyawan?->division?->div_name" disabled />
+        </div>
+        
+        <div>
+            <x-input-label for="lokasi" :value="__('Lokasi')" />
+            <x-text-input id="lokasi" type="text" class="mt-1 block w-full bg-gray-100" :value="$user->karyawan?->location?->loc_name" disabled />
+        </div>
+
+        <div>
+            <x-input-label for="level" :value="__('Level')" />
+            <x-text-input id="level" type="text" class="mt-1 block w-full bg-gray-100" :value="$user->karyawan?->levelRel?->level" disabled />
+        </div>
+
+        <!-- Original Email Field -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
