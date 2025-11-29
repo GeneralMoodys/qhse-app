@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Accident;
 use App\Models\Master\Unit;
 use App\Models\StoringEvent;
 use App\Models\UnitMonthlyReport;
@@ -12,6 +13,7 @@ class ViolationShowUnit extends Component
     public Unit $unit;
     public $totalKilometer = 0;
     public $storingEventCount = 0;
+    public $accidents;
 
     public function mount(Unit $unit)
     {
@@ -26,6 +28,9 @@ class ViolationShowUnit extends Component
         // Get related report IDs to count storing events
         $reportIds = UnitMonthlyReport::where('unit_id', $this->unit->id)->pluck('id');
         $this->storingEventCount = StoringEvent::whereIn('unit_monthly_report_id', $reportIds)->count();
+
+        // Get related accidents
+        $this->accidents = Accident::where('m_unit_id', $this->unit->id)->latest()->get();
     }
 
     public function render()
