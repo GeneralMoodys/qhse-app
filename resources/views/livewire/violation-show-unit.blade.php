@@ -25,8 +25,16 @@
                         <p class="mt-1 text-gray-800 dark:text-gray-100">{{ number_format($totalKilometer, 0, ',', '.') }} km</p>
                     </div>
                     <div>
-                        <label class="text-sm font-semibold text-gray-600 dark:text-gray-300">Total Storing:</label>
-                        <p class="mt-1 text-gray-800 dark:text-gray-100">{{ $storingEventCount }} kali</p>
+                        <button 
+                            wire:click.prevent="openStoringModal" 
+                            @disabled($storingEventCount === 0)
+                            class="w-full flex justify-between items-center text-left py-1 disabled:opacity-50 disabled:cursor-not-allowed group"
+                        >
+                            <span class="text-sm font-semibold text-gray-600 dark:text-gray-300">Total Storing:</span>
+                            <span class="text-blue-600 dark:text-blue-400 group-hover:underline group-disabled:no-underline group-disabled:text-gray-800 dark:group-disabled:text-gray-100">
+                                {{ $storingEventCount }} kali
+                            </span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -68,4 +76,46 @@
             </div>
         </div>
     </div>
+
+    {{-- Storing Details Modal --}}
+    <x-modal name="storing-details">
+        <div class="p-6">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                Detail Riwayat Storing untuk Unit {{ $unit->no_unit }}
+            </h2>
+
+            <div class="mt-4 overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">Tanggal</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">Waktu</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">Lokasi</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">Deskripsi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        @forelse ($storingEvents as $event)
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{{ \Carbon\Carbon::parse($event->event_date)->format('d M Y') }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{{ \Carbon\Carbon::parse($event->event_time)->format('H:i') }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{{ $event->location }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{{ $event->description }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-4 py-3 text-center text-sm text-gray-500">Tidak ada data storing.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <x-secondary-button x-on:click="$dispatch('close')">
+                    Tutup
+                </x-secondary-button>
+            </div>
+        </div>
+    </x-modal>
 </div>

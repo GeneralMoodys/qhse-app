@@ -14,23 +14,29 @@ class ViolationShowUnit extends Component
     public $totalKilometer = 0;
     public $storingEventCount = 0;
     public $accidents;
+    public $storingEvents; // To hold the collection of storing events
 
     public function mount(Unit $unit)
     {
         $this->unit = $unit;
         
         // Manually query across database connections
-        // These models use the default 'pgsql' connection by default
         
         // Calculate total kilometers
         $this->totalKilometer = UnitMonthlyReport::where('unit_id', $this->unit->id)->sum('kilometer');
         
-        // Get related report IDs to count storing events
+        // Get related report IDs to fetch storing events
         $reportIds = UnitMonthlyReport::where('unit_id', $this->unit->id)->pluck('id');
-        $this->storingEventCount = StoringEvent::whereIn('unit_monthly_report_id', $reportIds)->count();
+        $this->storingEvents = StoringEvent::whereIn('unit_monthly_report_id', $reportIds)->latest('event_date')->get();
+        $this->storingEventCount = $this->storingEvents->count();
 
         // Get related accidents
         $this->accidents = Accident::where('m_unit_id', $this->unit->id)->latest()->get();
+    }
+
+    public function openStoringModal()
+    {
+        $this->dispatch('open-modal', 'storing-details');
     }
 
     public function render()
