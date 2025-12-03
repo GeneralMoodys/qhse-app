@@ -20,7 +20,7 @@
         <!-- Profile Photo -->
         <div class="flex items-center gap-4">
             <div class="flex-shrink-0">
-                @if ($user->karyawan && $user->karyawan->photo)
+                @if ($user->karyawan?->photo)
                     <img class="h-20 w-20 rounded-full object-cover" src="{{ asset($user->karyawan->photo) }}" alt="{{ $user->karyawan->nama_karyawan }}">
                 @else
                     <svg class="h-20 w-20 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
@@ -28,19 +28,19 @@
                     </svg>
                 @endif
             </div>
-            <p class="text-sm text-gray-600">{{ $user->karyawan->nama_karyawan ?? $user->name }}</p>
+            <p class="text-sm text-gray-600">{{ $user->karyawan?->nama_karyawan ?? $user->name }}</p>
         </div>
 
         <!-- Nomor Induk Karyawan -->
         <div>
             <x-input-label for="payroll_id" :value="__('Nomor Induk Karyawan')" />
-            <x-text-input id="payroll_id" name="payroll_id" type="text" class="mt-1 block w-full bg-gray-100" :value="$user->karyawan->payroll_id ?? $user->payroll_id" disabled />
+            <x-text-input id="payroll_id" name="payroll_id" type="text" class="mt-1 block w-full bg-gray-100" :value="$user->karyawan?->payroll_id ?? $user->payroll_id" disabled />
         </div>
 
         <!-- Tanggal Bergabung -->
         <div>
             <x-input-label for="tgl_masuk" :value="__('Tanggal Bergabung')" />
-            <x-text-input id="tgl_masuk" name="tgl_masuk" type="text" class="mt-1 block w-full bg-gray-100" :value="($user->karyawan->tgl_masuk ? \Carbon\Carbon::createFromFormat('j/n/Y', $user->karyawan->tgl_masuk)->isoFormat('D MMMM Y') : '')" disabled />
+            <x-text-input id="tgl_masuk" name="tgl_masuk" type="text" class="mt-1 block w-full bg-gray-100" :value="($user->karyawan?->tgl_masuk ? \Carbon\Carbon::createFromFormat('j/n/Y', $user->karyawan->tgl_masuk)->isoFormat('D MMMM Y') : '')" disabled />
         </div>
 
         <div>
