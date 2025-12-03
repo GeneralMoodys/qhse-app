@@ -3,6 +3,7 @@
 namespace App\Models\Master;
 
 use App\Models\User;
+use App\Models\Master\Driver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -30,6 +31,14 @@ class Karyawan extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'payroll_id', 'payroll_id');
+    }
+
+    /**
+     * Get the driver record associated with the karyawan.
+     */
+    public function driver()
+    {
+        return $this->hasOne(Driver::class, 'karyawan_id', 'id');
     }
 
     /**
